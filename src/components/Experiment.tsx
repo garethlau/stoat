@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useExperimentManager } from '../contexts/experimentManager';
+import { useLab } from '../contexts/lab';
 import { ExperimentProvider } from '../contexts/experiment';
 import { Experiment as ExperimentClass } from '../experiment';
 import { Result } from '../types';
@@ -11,12 +11,12 @@ interface Props {
 }
 
 export const Experiment: React.FC<Props> = ({ children, name, refreshOnMount = false }) => {
-  const experimentManager = useExperimentManager();
+  const lab = useLab();
   const experiment = new ExperimentClass(name);
 
   const variant = useMemo(() => {
     if (refreshOnMount) {
-      experimentManager.clearResult(name);
+      lab.clearResult(name);
     }
     const indices: number[] = [];
     const variantNames: string[] = [];
@@ -31,8 +31,8 @@ export const Experiment: React.FC<Props> = ({ children, name, refreshOnMount = f
         indices.push(index);
       }
     });
-    if (experimentManager.hasResult(name, variantNames)) {
-      const result: Result = experimentManager.getResult(name);
+    if (lab.hasResult(name, variantNames)) {
+      const result: Result = lab.getResult(name);
       return children[result.selected];
     } else {
       const index = indices[Math.floor(Math.random() * indices.length)];
@@ -42,7 +42,7 @@ export const Experiment: React.FC<Props> = ({ children, name, refreshOnMount = f
       };
 
       experiment.setResult(result);
-      experimentManager.saveResult(name, result);
+      lab.saveResult(name, result);
       return children[result.selected];
     }
   }, [name, children]);

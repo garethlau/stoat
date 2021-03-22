@@ -1,19 +1,19 @@
 import { Result } from './types';
 import Store from './Store';
 
-export interface ExperimentManagerConfig {
+export interface LabConfig {
   debug?: boolean;
   logging?: boolean;
 }
 
-export class ExperimentManager {
+export class Lab {
   endpoint: string;
   debug: boolean = false;
   logging: boolean = true;
   experiments: Record<string, Result> = {};
   store: Store;
 
-  constructor(endpoint: string, config?: ExperimentManagerConfig) {
+  constructor(endpoint: string, config?: LabConfig) {
     this.endpoint = endpoint;
     this.store = new Store();
     this.experiments = this.store.getAllExperiments();

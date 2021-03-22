@@ -1,6 +1,6 @@
 import { Result } from './types';
 
-interface Lab {
+interface LabDb {
   experiments: Record<string, Result>;
 }
 
@@ -30,24 +30,24 @@ export default class Store {
   getAllExperiments(): Record<string, Result> {
     const item = localStorage.getItem(storageKey);
     if (!item) return {};
-    const lab: Lab = JSON.parse(item);
-    return lab.experiments;
+    const labDb: LabDb = JSON.parse(item);
+    return labDb.experiments;
   }
 
   clearResult(name: string): void {
     const item = localStorage.getItem(storageKey);
     if (!item) return;
-    const lab: Lab = JSON.parse(item);
-    delete lab.experiments[name];
+    const labDb: LabDb = JSON.parse(item);
+    delete labDb.experiments[name];
 
-    localStorage.setItem(storageKey, JSON.stringify(lab));
+    localStorage.setItem(storageKey, JSON.stringify(labDb));
   }
 
   hasResult(name: string, variants: string[]): boolean {
     const item = localStorage.getItem(storageKey);
     if (!item) return false;
-    const lab: Lab = JSON.parse(item);
-    const result = lab.experiments[name];
+    const labDb: LabDb = JSON.parse(item);
+    const result = labDb.experiments[name];
     if (!result || !result.variants) return false;
     if (!sameVariants(result.variants, variants)) return false;
     return true;
@@ -56,16 +56,16 @@ export default class Store {
   getResult(name: string): Result {
     const item = localStorage.getItem(name);
     if (!item) throw new Error('No saved result');
-    const lab: Lab = JSON.parse(item);
-    return lab.experiments[name];
+    const labDb: LabDb = JSON.parse(item);
+    return labDb.experiments[name];
   }
 
   saveResult(name: string, result: Result) {
     const item = localStorage.getItem(storageKey);
     if (!item) return;
 
-    const lab: Lab = JSON.parse(item);
-    lab.experiments[name] = result;
-    localStorage.setItem(storageKey, JSON.stringify(lab));
+    const labDb: LabDb = JSON.parse(item);
+    labDb.experiments[name] = result;
+    localStorage.setItem(storageKey, JSON.stringify(labDb));
   }
 }

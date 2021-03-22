@@ -1,5 +1,5 @@
 export * from './components/Variant';
 export * from './components/Experiment';
-export * from './ExperimentManager';
-export * from './contexts/experimentManager';
+export * from './Lab';
+export * from './contexts/lab';
 export * from './contexts/experiment';
