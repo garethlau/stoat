@@ -1,13 +1,13 @@
 import { Result } from './types';
 
-export interface ExperimenterConfig {
+export interface ExperimentManagerConfig {
   debug: boolean;
 }
-export class Experimenter {
+export class ExperimentManager {
   endpoint: string;
   debug: boolean = false;
 
-  constructor(endpoint: string, config?: ExperimenterConfig) {
+  constructor(endpoint: string, config?: ExperimentManagerConfig) {
     this.endpoint = endpoint;
 
     if (config) {

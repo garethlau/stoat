@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useExperimenter } from '../contexts/experimentor';
+import { useExperimentManager } from '../contexts/experimentManager';
 import store from '../store';
 import { ExperimentProvider } from '../contexts/experiment';
 import { Experiment as ExperimentClass } from '../experiment';
@@ -12,7 +12,7 @@ interface Props {
 }
 
 export const Experiment: React.FC<Props> = ({ children, name, refreshOnMount = false }) => {
-  const experimenter = useExperimenter();
+  const experimenter = useExperimentManager();
   const experiment = new ExperimentClass(name);
 
   const variant = useMemo(() => {
