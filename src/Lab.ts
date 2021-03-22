@@ -9,11 +9,17 @@ export interface LabConfig {
 
 export class Lab {
   endpoint?: string;
-  debug: boolean = false;
-  logging: boolean = true;
+  debug: boolean;
+  logging: boolean;
   experiments: Record<string, Result> = {};
   store: Store;
 
+  /**
+   * @param config Configurations for the lab.
+   * @param config.debug Setting debug to true will log outputs to the console. Defaults to false;
+   * @param config.endpoint Endpoint to send experiment results to. Providing no endpoint will disable logging.
+   * @param config.logging Set to false to disable sending experiment logs to the endpint. Defaults to true.
+   */
   constructor(config?: LabConfig) {
     this.store = new Store();
     this.experiments = this.store.getAllExperiments();
@@ -63,6 +69,7 @@ export class Lab {
       body: JSON.stringify(data), // body data type must match "Content-Type" header
     });
     if (this.debug) {
+      // tslint:disable-next-line:no-console
       console.log(response);
     }
   }
