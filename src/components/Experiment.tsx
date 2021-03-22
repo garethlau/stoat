@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { useExperimentManager } from '../contexts/experimentManager';
-import store from '../store';
 import { ExperimentProvider } from '../contexts/experiment';
 import { Experiment as ExperimentClass } from '../experiment';
 import { Result } from '../types';
@@ -12,12 +11,12 @@ interface Props {
 }
 
 export const Experiment: React.FC<Props> = ({ children, name, refreshOnMount = false }) => {
-  const experimenter = useExperimentManager();
+  const experimentManager = useExperimentManager();
   const experiment = new ExperimentClass(name);
 
   const variant = useMemo(() => {
     if (refreshOnMount) {
-      store.clearResult(name);
+      experimentManager.clearResult(name);
     }
     const indices: number[] = [];
     const variantNames: string[] = [];
@@ -32,8 +31,8 @@ export const Experiment: React.FC<Props> = ({ children, name, refreshOnMount = f
         indices.push(index);
       }
     });
-    if (store.hasResult(name, variantNames)) {
-      const result: Result = store.getResult(name);
+    if (experimentManager.hasResult(name, variantNames)) {
+      const result: Result = experimentManager.getResult(name);
       return children[result.selected];
     } else {
       const index = indices[Math.floor(Math.random() * indices.length)];
@@ -42,11 +41,8 @@ export const Experiment: React.FC<Props> = ({ children, name, refreshOnMount = f
         selected: index,
       };
 
-      store.saveResult(name, result);
-      console.log(name, result);
       experiment.setResult(result);
-      console.log(experiment);
-      experimenter.record(name, result);
+      experimentManager.saveResult(name, result);
       return children[result.selected];
     }
   }, [name, children]);
