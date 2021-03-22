@@ -15,36 +15,45 @@ export const Experiment: React.FC<Props> = ({ children, name, refreshOnMount = f
   const experiment = new ExperimentClass(name);
 
   const variant = useMemo(() => {
-    if (refreshOnMount) {
-      lab.clearResult(name);
-    }
-    const indices: number[] = [];
+    const indices: number[] = []; // Array to hold the indices of children based on each weight
     const variantNames: string[] = [];
+    let result: Result;
+
     React.Children.forEach(children, (element, index) => {
       if (!React.isValidElement(element)) {
         throw new Error('Invalid variant');
       }
 
       variantNames.push(element.props.name);
+
       const { weight = 1 } = element.props;
       for (let i = 0; i < weight; i++) {
         indices.push(index);
       }
     });
-    if (lab.hasResult(name, variantNames)) {
-      const result: Result = lab.getResult(name);
-      return children[result.selected];
+
+    if (lab.hasResult(name, variantNames) && !refreshOnMount) {
+      // Use previous result
+      result = lab.getResult(name);
     } else {
+      // Calculate new index
       const index = indices[Math.floor(Math.random() * indices.length)];
-      const result: Result = {
+      result = {
         variants: variantNames,
         selected: index,
       };
 
-      experiment.setResult(result);
-      lab.saveResult(name, result);
-      return children[result.selected];
+      if (refreshOnMount) {
+        // Clear previously calculated result (there might not be one)
+        lab.clearResult(name);
+      } else {
+        // Save the result to be used in the future
+        lab.saveResult(name, result);
+      }
     }
+
+    experiment.setResult(result);
+    return children[result.selected];
   }, [name, children]);
 
   return <ExperimentProvider experiment={experiment}>{variant}</ExperimentProvider>;
