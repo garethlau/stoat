@@ -1,4 +1,5 @@
 import React from 'react';
+import { useExperiment } from '../contexts/experiment';
 
 interface Props {
   children: React.ReactNode;
@@ -7,5 +8,10 @@ interface Props {
 }
 
 export const Variant: React.FC<Props> = ({ children, name }) => {
-  return <span variant-name={name}>{children}</span>;
+  const experiment = useExperiment();
+  return (
+    <span experiment-name={experiment.name} variant-name={name}>
+      {children}
+    </span>
+  );
 };

@@ -17,9 +17,6 @@ export class Experimenter {
 
   async record(name: string, result: Result) {
     const data = { name, variants: result.variants, active: result.variants[result.selected] };
-    if (this.debug) {
-      console.log(data);
-    }
     const response = await fetch(this.endpoint, {
       method: 'POST',
       mode: 'cors',

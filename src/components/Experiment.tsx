@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useExperimenter } from '../contexts/experimentor';
-import { hasResult, saveResult, getResult, clearResult } from '../utils';
+import store from '../store';
+import { ExperimentProvider } from '../contexts/experiment';
+import { Experiment as ExperimentClass } from '../experiment';
 import { Result } from '../types';
 
 interface Props {
@@ -11,9 +13,12 @@ interface Props {
 
 export const Experiment: React.FC<Props> = ({ children, name, refreshOnMount = false }) => {
   const experimenter = useExperimenter();
-  const [active, setActive] = useState(-1);
+  const experiment = new ExperimentClass(name);
 
-  useEffect(() => {
+  const variant = useMemo(() => {
+    if (refreshOnMount) {
+      store.clearResult(name);
+    }
     const indices: number[] = [];
     const variantNames: string[] = [];
     React.Children.forEach(children, (element, index) => {
@@ -27,9 +32,9 @@ export const Experiment: React.FC<Props> = ({ children, name, refreshOnMount = f
         indices.push(index);
       }
     });
-    if (hasResult(name, variantNames)) {
-      const result: Result = getResult(name);
-      setActive(result.selected);
+    if (store.hasResult(name, variantNames)) {
+      const result: Result = store.getResult(name);
+      return children[result.selected];
     } else {
       const index = indices[Math.floor(Math.random() * indices.length)];
       const result: Result = {
@@ -37,15 +42,14 @@ export const Experiment: React.FC<Props> = ({ children, name, refreshOnMount = f
         selected: index,
       };
 
-      setActive(index);
-      saveResult(name, result);
-
+      store.saveResult(name, result);
+      console.log(name, result);
+      experiment.setResult(result);
+      console.log(experiment);
       experimenter.record(name, result);
+      return children[result.selected];
     }
-    if (refreshOnMount) {
-      clearResult(name);
-    }
-  }, []);
+  }, [name, children]);
 
-  return <span experiment-name={name}>{children[active]}</span>;
+  return <ExperimentProvider experiment={experiment}>{variant}</ExperimentProvider>;
 };
