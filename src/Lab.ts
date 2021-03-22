@@ -25,9 +25,10 @@ export class Lab {
     this.experiments = this.store.getAllExperiments();
 
     if (config) {
-      this.debug = config.debug || false;
-      this.endpoint = config.endpoint || undefined;
-      this.logging = config.logging || true;
+      const { logging = true, debug = false, endpoint = '' } = config;
+      this.debug = debug;
+      this.endpoint = endpoint;
+      this.logging = logging;
     }
   }
 
@@ -41,17 +42,18 @@ export class Lab {
 
   clearResult(name: string): void {
     this.store.clearResult(name);
+    this.experiments = this.store.getAllExperiments();
   }
 
   async saveResult(name: string, result: Result) {
+    // Log result to backend
     if (this.logging) {
       const data = { name, variants: result.variants, active: result.variants[result.selected] };
       await this._log(data);
     }
 
     this.store.saveResult(name, result);
-
-    this.experiments[name] = result;
+    this.experiments = this.store.getAllExperiments();
   }
 
   async _log(data: any) {
