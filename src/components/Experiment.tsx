@@ -42,14 +42,13 @@ export const Experiment: React.FC<Props> = ({ children, name, refreshOnMount = f
         variants: variantNames,
         selected: index,
       };
-
-      if (refreshOnMount) {
-        // Clear previously calculated result (there might not be one)
-        lab.clearResult(name);
-      } else {
-        // Save the result to be used in the future
-        lab.saveResult(name, result);
-      }
+    }
+    if (refreshOnMount) {
+      // Clear previously calculated result (there might not be one)
+      lab.clearResult(name);
+    } else {
+      // Save the result to be used in the future
+      lab.saveResult(name, result);
     }
 
     experiment.setResult(result);
