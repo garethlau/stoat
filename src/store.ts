@@ -33,3 +33,12 @@ export function saveResult(name: string, result: Result) {
   const rawData = JSON.stringify(result);
   localStorage.setItem(name, rawData);
 }
+
+const store = {
+  saveResult,
+  hasResult,
+  clearResult,
+  getResult,
+};
+
+export default store;
