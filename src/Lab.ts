@@ -4,22 +4,23 @@ import Store from './Store';
 export interface LabConfig {
   debug?: boolean;
   logging?: boolean;
+  endpoint?: string;
 }
 
 export class Lab {
-  endpoint: string;
+  endpoint?: string;
   debug: boolean = false;
   logging: boolean = true;
   experiments: Record<string, Result> = {};
   store: Store;
 
-  constructor(endpoint: string, config?: LabConfig) {
-    this.endpoint = endpoint;
+  constructor(config?: LabConfig) {
     this.store = new Store();
     this.experiments = this.store.getAllExperiments();
 
     if (config) {
       this.debug = config.debug || false;
+      this.endpoint = config.endpoint || undefined;
       this.logging = config.logging || true;
     }
   }
@@ -48,6 +49,7 @@ export class Lab {
   }
 
   async _log(data: any) {
+    if (!this.endpoint) return;
     const response = await fetch(this.endpoint, {
       method: 'POST',
       mode: 'cors',
